@@ -21,7 +21,7 @@ console.log(generateDependencyReport());
 import fs from 'fs'; // was used to check file status for audio file | debugging purposes
 
 const TOKEN = process.env.DISCORD_TOKEN;
-const TARGETUSERTAG = "erbsndspoices";
+const TARGETUSERTAG = "justabloke"; // change the target user tag here
 
 const client = new Client({
     intents: [
