@@ -41,7 +41,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             const connection = joinVoiceChannel({
                 channelId: newState.channelId,
                 guildId: newState.guildId,
-                adapterCreater: newState.guild.voiceAdapterCreator
+                adapterCreator: newState.guild.voiceAdapterCreator
             });
             
         }
