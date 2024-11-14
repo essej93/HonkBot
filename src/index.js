@@ -60,6 +60,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 adapterCreator: newState.guild.voiceAdapterCreator
             });
 
+            // checks if there's an error with the file
             fs.access(path.join(__dirname, 'src', 'soundfiles', 'sound.mp3'), fs.constants.F_OK, err => {
                 if (err){
                     console.error("There's an error with the file");
@@ -75,6 +76,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             player.play(resource);
             connection.subscribe(player);
 
+            // replays the audio once the audio player is idle
             player.on(AudioPlayerStatus.Idle, () => {
                 player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
             });
@@ -109,7 +111,6 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
     }
 });
-
 
 
 client.login(TOKEN);
