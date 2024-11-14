@@ -21,6 +21,7 @@ console.log(generateDependencyReport());
 import fs from 'fs'; // was used to check file status for audio file | debugging purposes
 
 const TOKEN = process.env.DISCORD_TOKEN;
+const TARGETUSERTAG = "erbsndspoices";
 
 const client = new Client({
     intents: [
@@ -51,7 +52,8 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     if (!oldState.channelId && newState.channelId) {
         console.log(`${newState.member.user.tag} joined channel ${newState.channel.name}`);
         const member = newState.member;
-        if(member.user.tag === 'erbsndspoices'){
+
+        if(member.user.tag === TARGETUSERTAG){
 
             // creates joinVoiceChannel object
             const connection = joinVoiceChannel({
@@ -61,35 +63,31 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             });
 
             // checks if there's an error with the file
-            fs.access(path.join(__dirname, 'src', 'soundfiles', 'sound.mp3'), fs.constants.F_OK, err => {
+            fs.access(path.join(__dirname,'soundfiles', 'sound.mp3'), fs.constants.F_OK, err => {
                 if (err){
                     console.error("There's an error with the file");
                     return;
                 }
-            })
-        
+            });
+
 
             // creates audio player and resource for the player
             const player = createAudioPlayer();
-            const resource = createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')); // can change directory how you would please.
 
-            player.play(resource);
             connection.subscribe(player);
 
-            // replays the audio once the audio player is idle
-            player.on(AudioPlayerStatus.Idle, () => {
-                player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
-            });
+            connection.receiver.speaking.on('start', (userId) => {
+                if(userId === member.id) player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
+            })
 
- 
-            // debugging/logging audio states
-            player.on('stateChange', (oldState, newState) => {
-                console.log(`Audio player state from ${oldState.status} to ${newState.status} `);
-            });
+            connection.receiver.speaking.on('end', (userId) => {
 
-            player.on('error', (error) => {
-                console.log("Error", error);
-            });
+                if(userId === member.id){
+                    player.stop();
+                }
+                
+            })
+
             
         }
 
@@ -99,7 +97,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
     if (oldState.channelId && !newState.channelId) {
         console.log(`${oldState.member.user.tag} left channel ${oldState.channel.name}`);
         const member = oldState.member;
-        if(member.user.tag === 'erbsndspoices'){
+        if(member.user.tag === TARGETUSERTAG){
             // gets connection
             const connection = getVoiceConnection(oldState.guild.id);
             // checks if connection exists
