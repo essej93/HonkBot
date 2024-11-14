@@ -76,13 +76,32 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
             connection.subscribe(player);
 
+            var userSpeaking = false;
+
+            function stopPreviousAudio() {
+                if(player.state.status !== AudioPlayerStatus.Idle){
+                    player.stop();
+                }
+            }
+
             connection.receiver.speaking.on('start', (userId) => {
-                if(userId === member.id) player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
+                if(userId === member.id){
+                    userSpeaking = true;
+
+                    stopPreviousAudio();
+
+                    player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
+
+                    player.on(AudioPlayerStatus.Idle, () => {
+                        if(userSpeaking) player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
+                    })
+                }
             })
 
             connection.receiver.speaking.on('end', (userId) => {
 
                 if(userId === member.id){
+                    userSpeaking = false;
                     player.stop();
                 }
                 
