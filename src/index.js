@@ -92,10 +92,12 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
                     player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
 
-                    player.on(AudioPlayerStatus.Idle, () => {
-                        if(userSpeaking) player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
-                    })
+
                 }
+            })
+
+            player.on(AudioPlayerStatus.Idle, () => {
+                if(userSpeaking) player.play(createAudioResource(path.join(__dirname, 'soundfiles', 'sound.mp3')));
             })
 
             connection.receiver.speaking.on('end', (userId) => {
@@ -106,10 +108,8 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 }
                 
             })
-
-            
+   
         }
-
     }
 
     // Check if the user left a channel
